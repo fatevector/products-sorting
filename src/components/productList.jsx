@@ -1,18 +1,48 @@
 // Файл productList.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { products as productsFromData } from "../data/products";
 import Product from "./product";
 import SortSelect from "./sortSelect";
+import { orderBy } from "lodash";
 
 // Варинты выбора признака сортировки
-const sortOptions = [{ value: "price", label: "Цена" }];
+const sortOptions = [
+    {
+        value: "priceASC",
+        label: "Цена по возрастанию",
+        sort: products => orderBy(products, ["price"], ["asc"])
+    },
+    {
+        value: "priceDESC",
+        label: "Цена по убыванию",
+        sort: products => orderBy(products, ["price"], ["desc"])
+    }
+];
 
 const ProductList = () => {
     // Наши товары
     const [products] = useState(productsFromData);
 
+    // Переменная для хранения сортированных товаров
+    const [sortProducts, setSortProducts] = useState(productsFromData);
+
     // Хранение признака сортировки
-    const [sortSign, setSortSign] = useState("price");
+    const [sortSign, setSortSign] = useState("priceDESC");
+
+    // отслеживаем изменение признака сортировки или списка товаров
+    useEffect(() => {
+        // В sortOptions ищем признак по которому сортируем
+        const findOption = sortOptions.find(({ value }) => value === sortSign);
+
+        // Если такой признак есть
+        if (findOption) {
+            // Вызываем нужный метод сортировки
+            setSortProducts(findOption.sort(products));
+        } else {
+            // Если не нашли то просто устанавливаем продукты
+            setSortProducts(products);
+        }
+    }, [sortSign, products]);
 
     // Метод для изменения признака сортировки
     const handleChangeSortSign = e => {
@@ -30,7 +60,7 @@ const ProductList = () => {
                 />
             </div>
             <div className="row mt-4">
-                {products.map(product => (
+                {sortProducts.map(product => (
                     // Список товаров
                     <Product key={product.id} {...product} />
                 ))}
