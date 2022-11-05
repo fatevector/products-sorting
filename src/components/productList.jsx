@@ -16,6 +16,16 @@ const sortOptions = [
         value: "priceDESC",
         label: "Цена по убыванию",
         sort: products => orderBy(products, ["price"], ["desc"])
+    },
+    {
+        value: "ratingASC",
+        label: "Рейтинг по возрастанию",
+        sort: products => orderBy(products, ["rating.rate"], ["asc"])
+    },
+    {
+        value: "ratingDESC",
+        label: "Рейтинг по убыванию",
+        sort: products => orderBy(products, ["rating.rate"], ["desc"])
     }
 ];
 
